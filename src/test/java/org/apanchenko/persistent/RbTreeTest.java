@@ -76,13 +76,12 @@ class RbTreeTest {
     void insertAndDelete() {
         // test insert-delete with shuffled data
         for(int count = 1; count < 100; ++count) {
-            System.out.println("insertAndDelete count==" + count);
             // generate test data
             ArrayList<Integer> data = new ArrayList<>(count);
             for (int i = 0; i < count; i++)
                 data.add(i);
 
-            for (int seed = 0; seed < 100; ++seed) {
+            for (int seed = 0; seed < 1000; ++seed) {
 
                 RbTree<Integer> tree = new RbTree<>();
 

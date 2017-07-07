@@ -21,7 +21,7 @@ package org.apanchenko.persistent;
  * </ul>
  *
  * @author Anton Panchenko
- * @version 0.1.0
+ * @version 0.1.1
  */
 public class RbTree<T> {
     private T key; // user data, is null for head only
@@ -219,14 +219,14 @@ public class RbTree<T> {
             if (isRed(left.left)) {
                 red = true; // this is a copy
                 left = new RbTree<>(left.key, false, left.left, left.right);
-                parent.rotateRight(this);
+                rotateRight(parent);
             }
         }
 
         // node, father red; uncle black
         else if (isRed(right)) {
             if (isRed(right.left)) // r.l is new node
-                rotateRight(right); // red r.l becomes r.r
+                right.rotateRight(this); // red r.l becomes r.r
             if (isRed(right.right)) {
                 red = true; // this is a copy
                 right = new RbTree<>(right.key, false, right.left, right.right);
@@ -262,15 +262,17 @@ public class RbTree<T> {
      *
      * Change: p, d, b - are copies or new
      */
-    private void rotateRight(RbTree<T> d) {
-        assert(left == d || right == d);
-        RbTree<T> b = d.left;
-        if (d.isLeft(this)) // p-b
-            left = b;
-        else
-            right = b;
-        d.left = b.right; // d-c
-        b.right = d; // b-d
+    private void rotateRight(RbTree<T> parent) {
+        assert(parent.left == this || parent.right == this);
+        RbTree<T> b = left;
+        if (parent != null) {
+            if (this == parent.left) // p-b
+                parent.left = b;
+            else
+                parent.right = b;
+        }
+        left = b.right; // d-c
+        b.right = this; // b-d
     }
 
     /**
@@ -478,7 +480,7 @@ public class RbTree<T> {
 
         if (remLeft) {
             if (_b.left == _c)
-                rotateRight(_b);
+                _b.rotateRight(this);
             else
                 _c.red = !(_b.red = true);
 
@@ -490,7 +492,7 @@ public class RbTree<T> {
             else
                 _c.red = !(_b.red = true);
 
-            _parent.rotateRight(this);
+            rotateRight(_parent);
         }
         red = false;
     }
@@ -530,7 +532,7 @@ public class RbTree<T> {
             else { // cr
                 _b.red = true; // 3
                 if (_c.left == _d) {// dr
-                    _b.rotateRight(_c);
+                    _c.rotateRight(_b);
                     _c.red = false; // 4
                     _d.red = false; // 2
                 }
@@ -538,7 +540,7 @@ public class RbTree<T> {
                     _c.red = false; // 2
                     _d.red = false; // 4
                 }
-                rotateRight(_b);
+                _b.rotateRight(this);
             }
             rotateLeft(_parent);
         }
@@ -546,7 +548,7 @@ public class RbTree<T> {
             if (_b.left == _c) { // cl
                 _b.red = false; // 2
                 if (_c.left == _d) {
-                    _b.rotateRight(_c);
+                    _c.rotateRight(_b);
                     _d.red = true; // 3
                     _c.red = false; // 4
                 }
@@ -568,7 +570,7 @@ public class RbTree<T> {
                 }
                 _b.rotateLeft(this);
             }
-            _parent.rotateRight(this);
+            rotateRight(_parent);
         }
     }
 
@@ -588,10 +590,10 @@ public class RbTree<T> {
         }
         else {
             if (_b.left == _c)
-                rotateRight(_b);
+                _b.rotateRight(this);
             else
                 _c.red = !(_b.red = false);
-            _parent.rotateRight(this);
+            rotateRight(_parent);
         }
     }
 
@@ -605,13 +607,13 @@ public class RbTree<T> {
 
         if (remLeft) {
             if (_b.left == _c)
-                rotateRight(_b);
+                _b.rotateRight(this);
             rotateLeft(_parent);
         }
         else {
             if (_b.right == _c)
                 _b.rotateLeft(this);
-            _parent.rotateRight(this);
+            rotateRight(_parent);
         }
     }
 
