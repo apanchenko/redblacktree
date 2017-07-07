@@ -298,17 +298,17 @@ public class RbTree<T> {
      *
      * Change: p, d, b - are copies or new
      */
-    private void rotateRight(RbTree<T> parent) {
-        assert(parent.left == this || parent.right == this);
-        RbTree<T> b = left;
-        if (parent != null) {
-            if (this == parent.left) // p-b
-                parent.left = b;
+    private void rotateRight(RbTree<T> _parent) {
+        assert(_parent.left == this || _parent.right == this);
+        RbTree<T> _b = left;
+        if (_parent != null) {
+            if (this == _parent.left) // p-b
+                _parent.left = _b;
             else
-                parent.right = b;
+                _parent.right = _b;
         }
-        left = b.right; // d-c
-        b.right = this; // b-d
+        left = _b.right; // d-c
+        _b.right = this; // b-d
     }
 
     /**
