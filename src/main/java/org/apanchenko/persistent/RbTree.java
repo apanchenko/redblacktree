@@ -3,32 +3,36 @@ package org.apanchenko.persistent;
 /**
  * <p>Persistent red-black tree.</p>
  *
- * Features:
+ * <p>Features:</p>
  * <ul>
  *  <li>RbTree requires O(N) space.</li>
  *  <li>{@code find}, {@code insert} and {@code remove} operations
- *  cost 0(log(N)) time and space.</li>
+ *  cost 0(log2(N)) time and space.</li>
  * </ul>
- * <p>
- * Implementation details:
+ *
+ * <p>Implementation details:</p>
  * <ul>
  *  <li>RbTree does not define special node type, it is a node itself</li>
  *  <li>Recursion actively used, it permits to get rid of link to parent node</li>
  *  <li>The only 'special' node is head, denoted by null key</li>
  *  <li>While RbTree is persistent, fields are not final. Their values may change
- *   for new nodes while constructing new tree inside {@code insert} or
- *   {@code remove}. This allows to minimize the number of allocations.</li>
+ *      for new nodes while constructing new tree inside {@code insert}
+ *      or {@code remove}. This allows to minimize the number of allocations.</li>
+ *  <li>Since fields are not declared final, it appears very easy to break
+ *      persistancy of {@code RbTree} instance. To make code more obvious added
+ *      underscore prefix to variables that are subject to change inside {@code insert}
+ *      or {@code remove}.</li>
  * </ul>
  *
  * @author Anton Panchenko
- * @version 0.1.1
+ * @version 0.1.2
  */
 public class RbTree<T> {
+    private static final int INVALID = -1; // used in validation
     private T key; // user data, is null for head only
     private boolean red; // head and root always black
     private RbTree<T> left; // root is always left to the head
     private RbTree<T> right;
-    private static final int INVALID = -1; // used in validation
 
     /** Creates an empty RbTree */
     public RbTree() {
@@ -42,6 +46,7 @@ public class RbTree<T> {
         red = true; // new leaf always red
     }
 
+    /** Creates a new node */
     private RbTree(T key, boolean red, RbTree<T> left, RbTree<T> right) {
         this.key = key;
         this.red = red;
@@ -50,7 +55,8 @@ public class RbTree<T> {
     }
 
     /**
-     * Copy node
+     * Duplicates a node
+     * @param from node to copy
      */
     private RbTree(RbTree<T> from) {
         this.key = from.key;
@@ -60,9 +66,15 @@ public class RbTree<T> {
     }
 
     /**
-     * O(n)
+     * Returns a hash code for this tree. The hash code for a
+     * {@code RbTree} object is computed as a combinations of
+     * hash codes all values mixed with node colors.
+     * (The hash value of the empty tree is zero.)
+     * Takes O(n) time.
+     *
+     * @return  a hash code value for this object.
      */
-    public int hashCode() {
+    @Override public int hashCode() {
         int hash = 0;
         if (key != null)
             hash = key.hashCode() * (red ? 1 : -1);
@@ -74,14 +86,17 @@ public class RbTree<T> {
     }
 
     /**
-     * O(1)
+     * @return true if tree is empty.
      */
     public boolean empty() {
         return head() && left == null; // root always left
     }
 
     /**
-     * O(n)
+     * Calculates number of nodes in a tree.
+     * Takes O(n) time.
+     *
+     * @return  a number of values stored in a {@code RbTree} object.
      */
     public int size() {
         if (empty())
@@ -94,7 +109,11 @@ public class RbTree<T> {
     }
 
     /**
-     * O(n)
+     * Returns a {@code String} object representing this
+     * {@code RbTree}'s value. To be used for debug purposes.
+     * Takes O(n) time.
+     *
+     * @return  a string representation of the tree.
      */
     public String toString() {
         if (empty())
@@ -107,35 +126,52 @@ public class RbTree<T> {
     }
 
     /**
-     * O(n)
+     * Validates this {@code RbTree} object for consistency with
+     * red-black tree rules:
+     * <ul>
+     *     <li>The root is black.</li>
+     *     <li>If a node is red, then both its children are black.</li>
+     *     <li>Every path from a given node to any of its descendant
+     *          leafs contains the same number of black nodes.</li>
+     * </ul>
+     * Takes O(n) time.
+     *
+     * @return  true if this tree is a valid red-black tree.
      */
     public boolean valid() {
-        assert(head());
-        if (red)
+        if (!head() || red)
             return false;
         return empty() || (!left.red && left.validBlackHeight() != INVALID);
     }
 
     /**
-     * O(lg(n))
+     * Returns a key found in a this tree or null.
+     * Takes O(log2(n)) time.
+     *
+     * @param {@code key} is a key to find. Cannot be null.
+     * @return  a found key or null.
      */
-    public T find(T findData) {
-        if (findData == null)
+    public T find(T key) {
+        if (key == null)
             throw new NullPointerException();
         if (empty())
             return null;
 
         RbTree<T> n;
         if (head())
-            n = left.findNode(findData); // root always left
+            n = left.findNode(key); // root always left
         else
-            n = findNode(findData);
+            n = findNode(key);
 
         return n == null ? null : n.key;
     }
 
     /**
-     * O(lg(n))
+     * Adds a new key into this tree.
+     * Takes O(log2(n)) time.
+     *
+     * @param {@code findKey} a key to find. Cannot be null.
+     * @return found key or null.
      */
     public RbTree<T> insert(T key) {
         if (key == null)
@@ -160,7 +196,7 @@ public class RbTree<T> {
     }
 
     /**
-     * May return self if not changed or a new node.
+     * @return this if not changed or a new node.
      */
     private RbTree<T> insertCopy(T insKey) {
         if (insKey.equals(this.key)) // already has that key
@@ -366,8 +402,12 @@ public class RbTree<T> {
     }
 
     /**
-     * Parent copy, this copy, store copy.
      * Swap store key with rightmost key.
+     * {@code _parent} copy, this copy, {@ocde store} copy.
+     *
+     * @param {@code _parent} parent node of this node.
+     * @parem {@code _store} receive key of rightmost node
+     * @param {@code fixup}
      */
     private void removeRightmost(RbTree<T> _parent, RbTree<T> _store, Fixup fixup) {
         assert(_parent != null);
