@@ -1,16 +1,17 @@
 package org.apanchenko.persistent;
 
+import java.util.Set;
 /**
- * <p>Persistent red-black tree.</p>
+ * Persistent red-black tree.<p>
  *
- * <p>Features:</p>
+ * Features:
  * <ul>
  *  <li>RbTree requires O(N) space.</li>
  *  <li>{@code find}, {@code insert} and {@code remove} operations
  *  cost 0(log2(N)) time and space.</li>
- * </ul>
+ * </ul><p>
  *
- * <p>Implementation details:</p>
+ * Implementation details:
  * <ul>
  *  <li>RbTree does not define special node type, it is a node itself</li>
  *  <li>Recursion actively used, it permits to get rid of link to parent node</li>
@@ -148,8 +149,8 @@ public class RbTree<T> {
      * Returns a key found in a this tree or null.
      * Takes O(log2(n)) time.
      *
-     * @param {@code key} is a key to find. Cannot be null.
-     * @return  a found key or null.
+     * @param key is a key to find, cannot be null
+     * @return  a found key or null
      */
     public T find(T key) {
         if (key == null)
@@ -170,8 +171,8 @@ public class RbTree<T> {
      * Adds a new key into this tree.
      * Takes O(log2(n)) time.
      *
-     * @param {@code findKey} a key to find. Cannot be null.
-     * @return found key or null.
+     * @param key a key to find, cannot be null
+     * @return found key or null
      */
     public RbTree<T> insert(T key) {
         if (key == null)
@@ -279,7 +280,6 @@ public class RbTree<T> {
      * Change: p, b, d - are copies or new
      */
     private void rotateLeft(RbTree<T> parent) {
-        assert(parent.left == this || parent.right == this);
         RbTree<T> d = right;
         if (parent != null) {
             if (this == parent.left) // p-d
@@ -299,7 +299,6 @@ public class RbTree<T> {
      * Change: p, d, b - are copies or new
      */
     private void rotateRight(RbTree<T> _parent) {
-        assert(_parent.left == this || _parent.right == this);
         RbTree<T> _b = left;
         if (_parent != null) {
             if (this == _parent.left) // p-b
@@ -320,6 +319,10 @@ public class RbTree<T> {
 
     /**
      * Remove node by key.
+     *
+     * @param key object to be removed from the tree, if present
+     * @return resulting tree without key or unchanged this
+     *         if key is not present
      */
     public RbTree<T> remove(T key) {
         if (key == null)
@@ -403,11 +406,10 @@ public class RbTree<T> {
 
     /**
      * Swap store key with rightmost key.
-     * {@code _parent} copy, this copy, {@ocde store} copy.
      *
-     * @param {@code _parent} parent node of this node.
-     * @parem {@code _store} receive key of rightmost node
-     * @param {@code fixup}
+     * @param _parent parent node of this node.
+     * @param _store receive key of rightmost node
+     * @param fixup control fixup for parent node
      */
     private void removeRightmost(RbTree<T> _parent, RbTree<T> _store, Fixup fixup) {
         assert(_parent != null);
@@ -666,10 +668,6 @@ public class RbTree<T> {
 
     private boolean head() {
         return key == null;
-    }
-
-    private boolean isLeft(RbTree<T> parent) {
-        return this == parent.left;
     }
 
     private boolean isRed(RbTree<T> n) {
