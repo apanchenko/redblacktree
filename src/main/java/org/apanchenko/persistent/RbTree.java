@@ -1,6 +1,5 @@
 package org.apanchenko.persistent;
 
-import java.util.Set;
 /**
  * Persistent red-black tree.<p>
  *
