@@ -12,25 +12,25 @@ class RbTreeTest {
 
     @Test
     void incorrectInput() {
-        RbTree<Boolean> rbt = new RbTree<>();
+        RbTree<Boolean> rbt = RbTree.empty();
         assertThrows(NullPointerException.class, () -> rbt.insert(null) );
         assertThrows(NullPointerException.class, () -> rbt.remove(null) );
         assertThrows(NullPointerException.class, () -> rbt.find(null) );
         assertTrue(rbt.valid());
-        assertTrue(rbt.empty());
+        assertTrue(rbt.isEmpty());
     }
 
     @Test
     void emptiness() {
-        RbTree<String> rbt = new RbTree<>();
-        assertTrue(rbt.empty());
+        RbTree<String> rbt = RbTree.empty();
+        assertTrue(rbt.isEmpty());
         assertNull(rbt.find("any"));
         assertEquals(0, rbt.size());
     }
 
     @Test
     void basicInsert() {
-        RbTree<String> t1 = new RbTree<String>().insert("Hello");
+        RbTree<String> t1 = RbTree.empty().insert("Hello");
         RbTree<String> t2 = t1.insert("brown").insert("fox");
         RbTree<String> t3 = t2.insert("!!!");
 
@@ -52,13 +52,13 @@ class RbTreeTest {
     @Test
     void insertPattern() {
         RbTree<Integer> t;
-        t = validInsert(new RbTree<>(), new int[]{5, 1, 4, 3, 2});
-        t = validInsert(new RbTree<>(), new int[]{5, 1, 4, 3, 2});
+        t = validInsert(RbTree.empty(), new int[]{5, 1, 4, 3, 2});
+        t = validInsert(RbTree.empty(), new int[]{5, 1, 4, 3, 2});
     }
 
     @Test
     void persistence() {
-        RbTree<Integer> tree = new RbTree<>();
+        RbTree<Integer> tree = RbTree.empty();
         Random rand = new Random();
 
         // compare tree hashes before and after operations
@@ -83,7 +83,7 @@ class RbTreeTest {
 
             for (int seed = 0; seed < 1000; ++seed) {
 
-                RbTree<Integer> tree = new RbTree<>();
+                RbTree<Integer> tree = RbTree.empty();
 
                 // insert data in random order
                 Random random = new Random(seed);
@@ -96,7 +96,7 @@ class RbTreeTest {
                 for (Integer x : data)
                     tree = validRemove(tree, x);
 
-                assertTrue(tree.empty());
+                assertTrue(tree.isEmpty());
             }
         }
     }

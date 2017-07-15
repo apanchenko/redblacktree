@@ -25,19 +25,23 @@ package org.apanchenko.persistent;
  * </ul>
  *
  * @author Anton Panchenko
- * @version 0.1.2
+ * @version 0.2.0
  */
 public class RbTree<T> {
+    private static final RbTree<Object> EMPTY = new RbTree(null, false, null, null);
     private static final int INVALID = -1; // used in validation
     private T key; // user data, is null for head only
     private boolean red; // head and root always black
     private RbTree<T> left; // root is always left to the head
     private RbTree<T> right;
 
-    /** Creates an empty RbTree */
-    public RbTree() {
-        key = null; //
-        red = false; // head is black
+    /**
+     * Creates an empty RbTree
+     * @return an empty object of RbTree
+     */
+    @SuppressWarnings("unchecked")
+    public static RbTree empty() {
+        return EMPTY;
     }
 
     /** Creates a new node */
@@ -69,7 +73,7 @@ public class RbTree<T> {
      * Returns a hash code for this tree. The hash code for a
      * {@code RbTree} object is computed as a combinations of
      * hash codes all values mixed with node colors.
-     * (The hash value of the empty tree is zero.)
+     * (The hash value of the isEmpty tree is zero.)
      * Takes O(n) time.
      *
      * @return  a hash code value for this object.
@@ -88,7 +92,7 @@ public class RbTree<T> {
     /**
      * @return true if tree is empty.
      */
-    public boolean empty() {
+    public boolean isEmpty() {
         return head() && left == null; // root always left
     }
 
@@ -99,7 +103,7 @@ public class RbTree<T> {
      * @return  a number of values stored in a {@code RbTree} object.
      */
     public int size() {
-        if (empty())
+        if (isEmpty())
             return 0;
         if (head())
             return left.size();
@@ -116,8 +120,8 @@ public class RbTree<T> {
      * @return  a string representation of the tree.
      */
     public String toString() {
-        if (empty())
-            return "is empty";
+        if (isEmpty())
+            return "is isEmpty";
         if (head())
             return "head" + left.toString();
         return "(" + key + (red ? "R" : "B")
@@ -141,7 +145,7 @@ public class RbTree<T> {
     public boolean valid() {
         if (!head() || red)
             return false;
-        return empty() || (!left.red && left.validBlackHeight() != INVALID);
+        return isEmpty() || (!left.red && left.validBlackHeight() != INVALID);
     }
 
     /**
@@ -154,7 +158,7 @@ public class RbTree<T> {
     public T find(T key) {
         if (key == null)
             throw new NullPointerException();
-        if (empty())
+        if (isEmpty())
             return null;
 
         RbTree<T> n;
@@ -178,7 +182,7 @@ public class RbTree<T> {
             throw new NullPointerException();
 
         RbTree<T> _this = this;
-        if (empty()) { // create a root
+        if (isEmpty()) { // create a root
             _this = new RbTree<>(this);
             _this.left = new RbTree<>(key); // root is always left
             _this.left.red = false; // root is always black
@@ -326,7 +330,7 @@ public class RbTree<T> {
     public RbTree<T> remove(T key) {
         if (key == null)
             throw new NullPointerException();
-        if (empty()) // is already empty
+        if (isEmpty()) // is already isEmpty
             return this; // return self
 
         Fixup fixup = new Fixup(); // output argument for fix up
