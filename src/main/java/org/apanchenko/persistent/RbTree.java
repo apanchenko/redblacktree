@@ -25,10 +25,10 @@ package org.apanchenko.persistent;
  * </ul>
  *
  * @author Anton Panchenko
- * @version 0.2.0
+ * @version 0.2.1
  */
 public class RbTree<T> {
-    private static final RbTree<Object> EMPTY = new RbTree(null, false, null, null);
+    private static final RbTree<Object> EMPTY = new RbTree<>(null, false, null, null);
     private static final int INVALID = -1; // used in validation
     private T key; // user data, is null for head only
     private boolean red; // head and root always black
@@ -40,8 +40,8 @@ public class RbTree<T> {
      * @return an empty object of RbTree
      */
     @SuppressWarnings("unchecked")
-    public static RbTree empty() {
-        return EMPTY;
+    public static <E> RbTree<E> empty() {
+        return (RbTree<E>) EMPTY;
     }
 
     /** Creates a new node */
@@ -73,7 +73,7 @@ public class RbTree<T> {
      * Returns a hash code for this tree. The hash code for a
      * {@code RbTree} object is computed as a combinations of
      * hash codes all values mixed with node colors.
-     * (The hash value of the isEmpty tree is zero.)
+     * (The hash value of the empty tree is zero.)
      * Takes O(n) time.
      *
      * @return  a hash code value for this object.
@@ -121,7 +121,7 @@ public class RbTree<T> {
      */
     public String toString() {
         if (isEmpty())
-            return "is isEmpty";
+            return "is empty";
         if (head())
             return "head" + left.toString();
         return "(" + key + (red ? "R" : "B")
@@ -330,7 +330,7 @@ public class RbTree<T> {
     public RbTree<T> remove(T key) {
         if (key == null)
             throw new NullPointerException();
-        if (isEmpty()) // is already isEmpty
+        if (isEmpty()) // is already empty
             return this; // return self
 
         Fixup fixup = new Fixup(); // output argument for fix up

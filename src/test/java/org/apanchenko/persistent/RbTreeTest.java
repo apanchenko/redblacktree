@@ -30,7 +30,8 @@ class RbTreeTest {
 
     @Test
     void basicInsert() {
-        RbTree<String> t1 = RbTree.empty().insert("Hello");
+        RbTree<String> t0 = RbTree.empty();
+        RbTree<String> t1 = t0.insert("Hello");
         RbTree<String> t2 = t1.insert("brown").insert("fox");
         RbTree<String> t3 = t2.insert("!!!");
 
@@ -47,13 +48,6 @@ class RbTreeTest {
         assertTrue(t3.valid());
         assertNull(t3.find("red"));
         assertEquals("fox", t3.find("fox"));
-    }
-
-    @Test
-    void insertPattern() {
-        RbTree<Integer> t;
-        t = validInsert(RbTree.empty(), new int[]{5, 1, 4, 3, 2});
-        t = validInsert(RbTree.empty(), new int[]{5, 1, 4, 3, 2});
     }
 
     @Test
@@ -99,14 +93,6 @@ class RbTreeTest {
                 assertTrue(tree.isEmpty());
             }
         }
-    }
-
-    private RbTree<Integer> validInsert(RbTree<Integer> tree, int[] keys) {
-        for (int key:keys) {
-            tree = tree.insert(key);
-            assertTrue(tree.valid());
-        }
-        return tree;
     }
 
     private RbTree<Integer> validInsert(RbTree<Integer> tree, int key) {
