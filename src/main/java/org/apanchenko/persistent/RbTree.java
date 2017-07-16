@@ -25,7 +25,7 @@ package org.apanchenko.persistent;
  * </ul>
  *
  * @author Anton Panchenko
- * @version 0.2.1
+ * @version 0.3.1
  */
 public class RbTree<T> {
     private static final RbTree<Object> EMPTY = new RbTree<>(null, false, null, null);
@@ -146,6 +146,17 @@ public class RbTree<T> {
         if (!head() || red)
             return false;
         return isEmpty() || (!left.red && left.validBlackHeight() != INVALID);
+    }
+
+    /**
+     * Tests is key exists in this RbTree object.
+     * Takes O(log2(n)) time.
+     *
+     * @param key is a key to find, cannot be null
+     * @return  true if key is in this RbTree object
+     */
+    public boolean contains(T key) {
+        return find(key) != null;
     }
 
     /**
